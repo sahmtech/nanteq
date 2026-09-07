@@ -1,0 +1,33 @@
+<?php
+
+return [
+    'id' => 'id',
+    'name' => 'name',
+    'username' => 'username',
+    'email' => 'email',
+    'phone_number' => 'phone_number',
+    'role' => 'role',
+    'created_at' => 'created_at',
+    'updated_at' => 'updated_at',
+    'users' => 'users',
+    'user' => 'user',
+    'roles' => 'roles',
+    'permissions' => 'permissions',
+    'permission' => 'permission',
+    'permission_ar' => 'permission_ar',
+    'password' => 'password',
+    'date' => 'date',
+    'description' => 'description',
+    'profile' => 'profile',
+    'current_password' => 'current password',
+    'log out' => 'log out',
+    'new_password' => 'new password',
+    'confirm_password' => 'confirm password',
+    'save' => 'save',
+    'Ensure your account is using a long, random password to stay secure.' => 'تأكد من أن حسابك يستخدم كلمة مرور طويلة وعشوائية للحفاظ على الأمان.',
+    'update_password' => 'update password',
+    'Update your account\'s profile information and email address.' => 'Update your account\'s profile information and email address.',
+    'profile_information' => 'profile information',
+    'view' => 'view',
+    'year' => 'year'
+];

@@ -1,0 +1,27 @@
+<?php
+return [
+    'no_permission'=>'you have no permission to do this operation',
+    'done_successfully'=>'done successfully',
+    'fav_successful'=>'Favorite Successful',
+    'unfav_successful'=>'UnFavorite Successful',
+    'toggle_notify'=>'Notification Started',
+    'un_toggle_notify'=>'Notification Stop',
+    'contact_sent'=>'Your Message was sent successfully',
+    'add_bag_successfully' => 'Product successfully added to Wallet',
+    'updated_successfully'=>'Updated Successfully',
+    'deleted_successfully'=>'Deleted Successfully',
+    'add_successfully'=>'Added Successfully',
+    'client_pending_order' => 'Your request has been submitted and is pending approval',
+    'not_youtube_url'=>'Invalid YouTube Url',
+    'reservation_successfully'=>'Your Reservation Created Successfully',
+    'rated_before' => 'rated before',
+    'provider_accept_order'=>'Order accepted',
+    'provider_refuse_order'=>'Order has been rejected',
+    'provider_done_order'=>'Order completed',
+    'rate_provider_successfully' => 'Service provider evaluated successfully',
+    'rate_product_successfully' => 'Product evaluated successfully',
+    'transaction_sent' => 'Your request has been sent pending',
+    'please_reach_limit_first' => 'please reach limit first',
+    'Service_are_required' => 'Service are required',
+
+];
