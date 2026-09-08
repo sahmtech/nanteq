@@ -1,0 +1,450 @@
+.fi-body.auth-split-page {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: linear-gradient(to bottom right, #0083a0, #005f73, #0a2540) !important;
+}
+
+.aw-page {
+    position: relative;
+    min-height: 100vh;
+    min-height: 100dvh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: safe center;
+    padding: 1rem;
+    overflow-x: hidden;
+    background: linear-gradient(to bottom right, #0083a0, #005f73, #0a2540);
+}
+
+.aw-orb {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(10px);
+    background: rgba(255, 255, 255, 0.14);
+    pointer-events: none;
+}
+
+.aw-orb-1 { width: 22rem; height: 22rem; top: -6rem; right: -4rem; }
+.aw-orb-2 { width: 18rem; height: 18rem; bottom: -5rem; left: -5rem; }
+.aw-orb-3 { width: 8rem; height: 8rem; top: 38%; left: 46%; background: rgba(255, 255, 255, 0.08); }
+
+.aw-stack {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.4rem;
+}
+
+.aw-logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.7rem;
+    color: #fff;
+    text-align: center;
+}
+
+.aw-logo-badge {
+    width: 3.4rem;
+    height: 3.4rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.9rem;
+    background: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    font-size: 1.45rem;
+    font-weight: 800;
+}
+
+.aw-logo-text {
+    margin: 0;
+    font-size: 1.7rem;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+}
+
+.aw-float {
+    width: 100%;
+    max-width: 36rem;
+    background: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 1.5rem;
+    box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.35);
+    padding: 2rem;
+    direction: rtl;
+}
+
+.aw-kicker {
+    margin: 0 0 0.3rem;
+    color: #0083a0;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.aw-title {
+    margin: 0;
+    color: #0f172a;
+    font-size: 1.65rem;
+    font-weight: 800;
+}
+
+.aw-subtitle {
+    margin: 0.4rem 0 0;
+    color: #64748b;
+    font-size: 0.92rem;
+    line-height: 1.7;
+}
+
+.aw-stepper {
+    direction: ltr;
+    display: flex;
+    align-items: center;
+    margin: 1.5rem 0 1.6rem;
+}
+
+.aw-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    min-width: 4.5rem;
+}
+
+.aw-badge {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 9999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #e2e8f0;
+    background: #fff;
+    color: #94a3b8;
+    font-size: 0.82rem;
+    font-weight: 800;
+}
+
+.aw-step.is-active .aw-badge,
+.aw-step.is-done .aw-badge {
+    background: #0083a0;
+    border-color: #0083a0;
+    color: #fff;
+}
+
+.aw-step-label {
+    color: #94a3b8;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-align: center;
+    line-height: 1.35;
+}
+
+.aw-step.is-active .aw-step-label,
+.aw-step.is-done .aw-step-label {
+    color: #0f172a;
+}
+
+.aw-line {
+    flex: 1;
+    height: 2px;
+    margin: 0 0.35rem 1.1rem;
+    background: #e2e8f0;
+    border-radius: 999px;
+}
+
+.aw-line.is-done {
+    background: #0083a0;
+}
+
+.aw-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #374151;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.aw-input,
+.aw-float .fi-input,
+.aw-float input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]) {
+    display: block;
+    width: 100%;
+    border-radius: 0.75rem;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    padding: 0.78rem 1rem;
+    color: #0f172a;
+    outline: none;
+}
+
+.aw-float .fi-input-wrp {
+    border: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+}
+
+.aw-input:focus,
+.aw-float .fi-input:focus,
+.aw-float input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):focus {
+    background: #fff;
+    border-color: #0083a0;
+    box-shadow: 0 0 0 2px rgba(0, 131, 160, 0.18);
+}
+
+.aw-error {
+    margin-top: 0.3rem;
+    color: #dc2626;
+    font-size: 0.8rem;
+}
+
+.aw-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+.aw-space {
+    display: grid;
+    gap: 1rem;
+}
+
+.aw-btn,
+.aw-float .fi-ac-btn-action {
+    display: inline-flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 0.75rem;
+    background: #0083a0 !important;
+    color: #fff !important;
+    font-weight: 700;
+    padding: 0.85rem 1rem;
+    cursor: pointer;
+}
+
+.aw-btn-ghost {
+    background: #fff !important;
+    color: #334155 !important;
+    border: 1px solid #e2e8f0;
+}
+
+.aw-footer {
+    margin-top: 1.35rem;
+    text-align: center;
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+.aw-footer a {
+    color: #0083a0;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.aw-plan {
+    display: block;
+    cursor: pointer;
+    padding: 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.9rem;
+    background: #fff;
+}
+
+.aw-float-wide {
+    max-width: 56rem;
+}
+
+.aw-plan-card {
+    position: relative;
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.aw-plan-card:hover {
+    transform: translateY(-3px) scale(1.01);
+    border-color: rgba(0, 131, 160, 0.3);
+    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+}
+
+.aw-plan-card.is-selected {
+    background: rgba(0, 131, 160, 0.05);
+    border: 2px solid #0083a0;
+    box-shadow: 0 10px 24px rgba(0, 131, 160, 0.12);
+}
+
+.aw-plan-pill {
+    display: inline-flex;
+    margin-bottom: 0.75rem;
+    padding: 0.2rem 0.7rem;
+    border-radius: 999px;
+    background: #0083a0;
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.aw-plan-check {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    width: 1.55rem;
+    height: 1.55rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: #0083a0;
+    color: #fff;
+}
+
+.aw-plan-name {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 800;
+    color: #111827;
+}
+
+.aw-plan-price {
+    margin: 0.55rem 0 0;
+    color: #0083a0;
+    font-size: 1.85rem;
+    font-weight: 800;
+    line-height: 1.15;
+}
+
+.aw-plan-price small {
+    display: inline-block;
+    margin-inline-start: 0.35rem;
+    color: #64748b;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.aw-plan-features {
+    margin: 1.1rem 0 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 0.55rem;
+}
+
+.aw-plan-features li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #334155;
+    font-size: 0.9rem;
+}
+
+.aw-feature-check {
+    color: #0083a0;
+    font-weight: 800;
+}
+
+.aw-plan-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.aw-plan-actions .aw-btn {
+    flex: 1;
+}
+
+.sp-cta {
+    margin-top: 0.25rem;
+    min-height: 3.25rem;
+    gap: 0.5rem;
+    font-size: 1rem;
+    box-shadow: 0 12px 24px rgba(0, 131, 160, 0.28) !important;
+}
+
+.sp-success-icon {
+    width: 4rem;
+    height: 4rem;
+    margin: 0 auto 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: rgba(0, 131, 160, 0.1);
+}
+
+.sp-pin-box {
+    position: relative;
+    margin: 1.5rem 0;
+    padding: 1.5rem;
+    text-align: center;
+    background: #f8fafc;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    border-radius: 1rem;
+    box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.sp-copy-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1.25rem;
+    border-radius: 0.75rem;
+    border: 1px solid rgba(0, 131, 160, 0.3);
+    background: #fff;
+    color: #0083a0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+
+.sp-copy-btn:hover {
+    background: #f1f5f9;
+}
+
+.sp-toast {
+    position: absolute;
+    left: 50%;
+    bottom: 0.7rem;
+    transform: translateX(-50%);
+    padding: 0.25rem 0.7rem;
+    border-radius: 999px;
+    background: #0f172a;
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.aw-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+}
+
+@media (min-width: 768px) {
+    .aw-page {
+        padding: 2rem;
+    }
+
+    .aw-float {
+        max-width: 42rem;
+        padding: 2.5rem;
+    }
+
+    .aw-float-wide {
+        max-width: 56rem;
+    }
+
+    .aw-grid-2 {
+        grid-template-columns: 1fr 1fr;
+    }
+}

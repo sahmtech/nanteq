@@ -6,7 +6,9 @@ use App\Exceptions\GeneralException;
 use App\Http\Resources\SoundProgressResource;
 use App\Models\Sound;
 use App\Models\SoundProgress;
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class AudioService
@@ -21,16 +23,44 @@ class AudioService
 
     protected $records = [];
 
-   public function aiModel($audio, $modelType)
-{
-    return Http::attach(
-        'audio',
-        file_get_contents($audio),
-        $audio->getClientOriginalName()
-    )->post(env('AI_MODEL_URL'), [
-        'model_type' => $modelType, 
-    ]);
-}
+    public function aiModel($audio, $modelType)
+    {
+        $config = config('services.ai_model');
+        $model = $config['models'][(int) $modelType] ?? $config['models'][0];
+        $url = rtrim((string) $config['base_url'], '/') . $model['path'];
+        $path = method_exists($audio, 'getRealPath') ? $audio->getRealPath() : (string) $audio;
+        $filename = method_exists($audio, 'getClientOriginalName')
+            ? $audio->getClientOriginalName()
+            : basename($path);
+
+        return Http::withToken($config['token'])
+            ->timeout($config['timeout'])
+            ->connectTimeout(15)
+            ->withOptions([
+                'verify' => $this->aiModelSslVerify(),
+            ])
+            ->attach('file', file_get_contents($path), $filename)
+            ->post($url, $model['form']);
+    }
+
+    protected function aiModelSslVerify(): bool|string
+    {
+        $caPath = config('services.ai_model.ca');
+
+        if (is_string($caPath) && $caPath !== '' && file_exists($caPath)) {
+            return $caPath;
+        }
+
+        return (bool) config('services.ai_model.verify');
+    }
+
+    protected function logAiModelFailure(Response $response): void
+    {
+        Log::warning('AI model request failed', [
+            'status' => $response->status(),
+            'body' => $response->body(),
+        ]);
+    }
 
     public function handle($data)
     {
@@ -43,11 +73,12 @@ class AudioService
 );
 
         if (!$response->successful()) {
+            $this->logAiModelFailure($response);
             throw new GeneralException(__('api.Something_went_wrong'));
         }
 
         return \DB::transaction(function () use ($data, $response) {
-            $transcribedText = json_decode($response)->text;
+            $transcribedText = trim((string) $response->json('text', ''));
 
             $this->sound = Sound::find($data['sound_id']);
            

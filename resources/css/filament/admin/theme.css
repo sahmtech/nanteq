@@ -6,3 +6,12 @@
 .fi-sidebar-nav-groups {
     @apply gap-y-4;
 }
+
+.auth-split .fi-btn-type-submit,
+.auth-split .fi-ac-btn-action {
+    @apply rounded-2xl;
+}
+
+.fi-panel-specialist .fi-sidebar-nav-groups {
+    @apply gap-y-2;
+}

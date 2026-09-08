@@ -4,14 +4,18 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser
 {
     use HasFactory, Notifiable, HasApiTokens, SoftDeletes, HasRoles;
 
@@ -46,9 +50,39 @@ class User extends Authenticatable
     }
 
 
+    public function canAccessPanel(Panel $panel): bool
+    {
+        if ($this->isSpecialist()) {
+            return $panel->getId() === 'specialist';
+        }
+
+        return $panel->getId() === 'admin';
+    }
+
+    public function isSpecialist(): bool
+    {
+        return $this->hasRole('specialist');
+    }
+
     public function plan()
     {
         return $this->hasOneThrough(Plan::class, Subscription::class);
+    }
+
+    public function assignedPlan(): BelongsTo
+    {
+        return $this->belongsTo(Plan::class, 'plan_id');
+    }
+
+    public function followedSpecialist(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'followed_specialist_id');
+    }
+
+    public function patients(): HasMany
+    {
+        return $this->hasMany(Patient::class, 'followed_specialist_id')
+            ->where('id', '!=', $this->getKey());
     }
 
     public function subscription()

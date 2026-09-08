@@ -1,0 +1,71 @@
+.fi-sidebar:not(.fi-sidebar-open) .spb {
+    display: none;
+}
+
+.spb {
+    margin: 0.65rem 0.75rem 0.85rem;
+    padding: 0.7rem 0.8rem;
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    border-radius: 0.85rem;
+    background: rgba(255, 255, 255, 0.55);
+    box-shadow: none;
+}
+
+.spb-label {
+    margin: 0 0 0.45rem;
+    color: #94a3b8;
+    font-size: 0.68rem;
+    font-weight: 600;
+}
+
+.spb-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.45rem;
+}
+
+.spb-pin {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.88rem;
+    font-weight: 650;
+    letter-spacing: 0.16em;
+    color: #334155;
+    user-select: all;
+}
+
+.spb-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.28rem;
+    padding: 0.28rem 0.55rem;
+    border: 0;
+    border-radius: 0.55rem;
+    background: transparent;
+    color: #0083a0;
+    font-size: 0.7rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.spb-btn:hover {
+    background: rgba(0, 131, 160, 0.08);
+}
+
+.spb-btn svg {
+    width: 0.82rem;
+    height: 0.82rem;
+}
+
+.dark .spb {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.dark .spb-pin {
+    color: #e2e8f0;
+}
+
+.dark .spb-label {
+    color: #64748b;
+}

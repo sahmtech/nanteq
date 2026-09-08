@@ -35,4 +35,24 @@ return [
         ],
     ],
 
+    'ai_model' => [
+        'base_url' => env('AI_MODEL_BASE_URL'),
+        'token' => env('AI_MODEL_TOKEN'),
+        'ca' => env('AI_MODEL_CA'),
+        'verify' => filter_var(env('AI_MODEL_VERIFY', false), FILTER_VALIDATE_BOOLEAN),
+        'timeout' => (int) env('AI_MODEL_TIMEOUT', 90),
+        'models' => [
+            0 => [
+                'path' => '/v1/stt',
+                'form' => [],
+            ],
+            1 => [
+                'path' => '/v1/transcribe',
+                'form' => [
+                    'model' => env('AI_MODEL_CTC', 'ar-ctc'),
+                ],
+            ],
+        ],
+    ],
+
 ];

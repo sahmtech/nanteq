@@ -36,6 +36,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('assign-sound', [AudioController::class, 'assignSound']);
 
         Route::get('user-details', [UserController::class, 'userDetails']);
+        Route::post('update-profile', [UserController::class, 'updateProfile']);
         Route::middleware('has-subscription')->group(function () {
             Route::get('letters-progresses', [LetterController::class, 'lettersProgresses']);
             Route::get('current-subscription', [SubscriptionController::class, 'currentSubscription']);            

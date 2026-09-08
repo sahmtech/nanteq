@@ -1,0 +1,115 @@
+.auth-split-page,
+.auth-split-page .fi-body,
+.fi-body.auth-split-page {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.auth-split-shell {
+    direction: ltr;
+    display: grid;
+    grid-template-columns: 1fr;
+    min-height: 100vh;
+    min-height: 100dvh;
+    width: 100%;
+}
+
+.auth-split-form {
+    direction: rtl;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8fafc;
+    padding: 2.5rem 1.5rem;
+}
+
+.auth-split-card {
+    width: 100%;
+    max-width: 28rem;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+    padding: 2rem;
+}
+
+.auth-split-card.is-wide {
+    max-width: 48rem;
+}
+
+.auth-split-brand {
+    display: none;
+    position: relative;
+    overflow: hidden;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #0083a0 0%, #00738d 52%, #005f73 100%);
+    color: #fff;
+    min-height: 12rem;
+}
+
+.auth-split-brand-mobile {
+    display: block;
+    margin-bottom: 1.5rem;
+    color: #0083a0;
+    font-size: 1.5rem;
+    font-weight: 800;
+}
+
+.auth-split-orb {
+    position: absolute;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.auth-split-orb-one {
+    width: 16rem;
+    height: 16rem;
+    top: -4rem;
+    left: -4rem;
+}
+
+.auth-split-orb-two {
+    width: 20rem;
+    height: 20rem;
+    right: -3rem;
+    bottom: -5rem;
+}
+
+.auth-split-brand-copy {
+    position: relative;
+    z-index: 1;
+    padding: 2.5rem;
+    text-align: center;
+}
+
+.auth-split-logo {
+    margin: 0;
+    font-size: 3.25rem;
+    font-weight: 900;
+    letter-spacing: 0.04em;
+}
+
+.auth-split-tagline {
+    margin: 1rem auto 0;
+    max-width: 22rem;
+    font-size: 1.125rem;
+    line-height: 1.8;
+    color: rgba(255, 255, 255, 0.86);
+}
+
+@media (min-width: 960px) {
+    .auth-split-shell {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+
+    .auth-split-brand {
+        display: flex;
+        min-height: 100vh;
+        min-height: 100dvh;
+    }
+
+    .auth-split-brand-mobile {
+        display: none;
+    }
+}

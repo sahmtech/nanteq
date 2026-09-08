@@ -2,58 +2,61 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Requests\Api\CompleteProfileRequest;
+use App\Http\Requests\Api\UpdateProfileRequest;
 use App\Http\Resources\UserResource;
 use App\Models\Age;
 use App\Models\User;
+use App\Services\PatientSpecialistFollowService;
 use App\Traits\ImageTrait;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\ValidationException;
 
 class UserController extends BaseController
 {
     use ImageTrait;
 
-    public function completeProfile(Request $request)
+    public function completeProfile(CompleteProfileRequest $request, PatientSpecialistFollowService $followService)
     {
-        $validated = $request->validate([
-            'age' => ['required', 'integer', 'exists:ages,id'],
-            'profile_picture' => ['nullable', 'image'],
-            'gender' => ['required', 'in:male,female'],
-            'name' => ['required', 'string']
-        ]);
         try {
-            $user = auth()->user();
+            $user = $request->user();
+            $this->syncProfile($user, $request, markCompleted: true);
+            $followService->applyFromRequest($user, $request);
 
-            $age_record = Age::find($validated['age']);
-            $year_of_birth = Carbon::now()->format('Y') - $age_record->age;
-
-            if ($request->has('profile_picture')) {
-                if ($user->profile_picture) {
-                    $this->deleteImage($user->profile_picture);
-                }
-                $image_path = $this->storeImage($validated['profile_picture'], 'images/profile_pictures');
-            }
-
-            $user->update([
-                'year_of_birth' => $year_of_birth,
-                'age_group_id' => $age_record->age_group_id,
-                'profile_picture' => $image_path ?? null,
-                'gender' => $validated['gender'],
-                'name' => $validated['name'],
-                'profile_completion_status' => 'completed',
-            ]);
-            return $this->withSuccess(message: __('api.operation_done_successfully'));
+            return $this->withSuccess(
+                $this->profileResource($user),
+                __('api.operation_done_successfully')
+            );
+        } catch (ValidationException $e) {
+            throw $e;
         } catch (\Throwable $e) {
             return $this->withError($e->getMessage(), 500);
         }
     }
 
+    public function updateProfile(UpdateProfileRequest $request, PatientSpecialistFollowService $followService)
+    {
+        try {
+            $user = $request->user();
+            $this->syncProfile($user, $request, markCompleted: false);
+            $followService->applyFromRequest($user, $request);
+
+            return $this->withSuccess(
+                $this->profileResource($user),
+                __('api.operation_done_successfully')
+            );
+        } catch (ValidationException $e) {
+            throw $e;
+        } catch (\Throwable $e) {
+            return $this->withError($e->getMessage(), 500);
+        }
+    }
 
     public function userDetails()
     {
         try {
-            $user = auth()->user();
-            return $this->withSuccess(new UserResource($user));
+            return $this->withSuccess($this->profileResource(auth()->user()));
         } catch (\Throwable $e) {
             return $this->withError($e->getMessage(), 500);
         }
@@ -88,5 +91,47 @@ class UserController extends BaseController
         } catch (\Throwable $e) {
             return $this->withError($e->getMessage(), 500);
         }
+    }
+
+    protected function syncProfile(User $user, FormRequest $request, bool $markCompleted): void
+    {
+        $validated = $request->validated();
+        $payload = [];
+
+        if (isset($validated['age'])) {
+            $ageRecord = Age::find($validated['age']);
+            $payload['year_of_birth'] = Carbon::now()->format('Y') - $ageRecord->age;
+            $payload['age_group_id'] = $ageRecord->age_group_id;
+        }
+
+        if (array_key_exists('gender', $validated)) {
+            $payload['gender'] = $validated['gender'];
+        }
+
+        if (array_key_exists('name', $validated)) {
+            $payload['name'] = $validated['name'];
+        }
+
+        if ($request->hasFile('profile_picture')) {
+            if ($user->profile_picture) {
+                $this->deleteImage($user->profile_picture);
+            }
+            $payload['profile_picture'] = $this->storeImage($validated['profile_picture'], 'images/profile_pictures');
+        }
+
+        if ($markCompleted) {
+            $payload['profile_completion_status'] = 'completed';
+        }
+
+        if ($payload !== []) {
+            $user->update($payload);
+        }
+    }
+
+    protected function profileResource(User $user): UserResource
+    {
+        $user->loadMissing(['ageGroup', 'subscription', 'followedSpecialist', 'lastProgress']);
+
+        return new UserResource($user);
     }
 }

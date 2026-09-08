@@ -19,7 +19,8 @@ class PlanResource extends JsonResource
             'name' => $this->name,
             'period' => $this->period,
             'periodicity_type' => $this->periodicity_type,
-            'price' => $this->price
+            'price' => $this->price,
+            'is_for_specialists' => (bool) $this->is_for_specialists,
         ];
     }
 }

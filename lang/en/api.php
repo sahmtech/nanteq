@@ -51,8 +51,14 @@ return [
     'subscribed_successfully' => 'Subscribed successfully',
     'uncompleted_profile_message' => 'Please complete profile data first',
     'already_subscribed' => 'You already has active subscription',
+    'plan_not_available' => 'This plan is not available for your account',
     'no_subscription' => 'No subscription',
     'completed' => 'Completed',
     'not_completed' => 'Not Completed',
-    'unauthenticated' => 'Sorry, you must log in first'
+    'unauthenticated' => 'Sorry, you must log in first',
+    'follow_with_specialist' => 'Follow with a specialist',
+    'specialist_pin' => 'Specialist PIN',
+    'specialist_pin_required' => 'A specialist PIN is required when following a specialist',
+    'specialist_pin_invalid' => 'This specialist PIN is invalid or does not belong to an active specialist',
+    'specialist_pin_full' => 'This specialist has reached the patient limit on their plan',
 ];

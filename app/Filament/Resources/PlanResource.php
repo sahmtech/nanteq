@@ -5,12 +5,14 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\PlanResource\Pages;
 use App\Models\Plan;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
+use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\RawJs;
 use Filament\Tables;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -80,6 +82,10 @@ class PlanResource extends Resource implements HasShieldPermissions
                             ->label(__('dashboard.patiant_count'))
                             ->required()
                             ->numeric(),
+                        Checkbox::make('is_for_specialists')
+                            ->label(__('dashboard.is_for_specialists'))
+                            ->helperText(__('dashboard.is_for_specialists_helper'))
+                            ->default(false),
                     ])
             ]);
     }
@@ -99,6 +105,10 @@ class PlanResource extends Resource implements HasShieldPermissions
                     ->label(__('dashboard.patiant_count'))
                     ->badge()
                     ->numeric()
+                    ->sortable(),
+                IconColumn::make('is_for_specialists')
+                    ->label(__('dashboard.is_for_specialists'))
+                    ->boolean()
                     ->sortable(),
                 TextColumn::make('subscriptions')
                     ->label(__('dashboard.subscribers_count'))
@@ -126,6 +136,8 @@ class PlanResource extends Resource implements HasShieldPermissions
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
+                Tables\Filters\TernaryFilter::make('is_for_specialists')
+                    ->label(__('dashboard.is_for_specialists')),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

@@ -12,6 +12,11 @@ class Plan extends Model
 
     protected $guarded = ['id', 'created_at', 'updated_at'];
 
+    protected $casts = [
+        'is_for_specialists' => 'boolean',
+        'patiant_count' => 'integer',
+    ];
+
     public function subscriptions()
     {
         return $this->hasMany(Subscription::class);

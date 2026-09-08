@@ -23,6 +23,11 @@ class SubscriptionController extends BaseController
             }
 
             $plan = Plan::find($validated['plan_id']);
+            $isSpecialist = $user->hasRole('specialist');
+
+            if ((bool) $plan->is_for_specialists !== $isSpecialist) {
+                return $this->withError(__('api.plan_not_available'), 403);
+            }
 
             $endDate = Carbon::now();
             if ($plan->periodicity_type === 'month') {

@@ -31,6 +31,9 @@ class UserResource extends JsonResource
             'phone_number' => $this->phone_number,
             'last_progress' =>  new LetterProgressResource($last_progress),
             'has_subscription' => $this->subscription && $this->subscription->status === 'active' ? true : false,
+            'follow_with_specialist' => $this->followed_specialist_id !== null,
+            'specialist_pin' => $this->followedSpecialist?->specialist_code,
+            'specialist_name' => $this->followedSpecialist?->name,
         ];
     }
 }

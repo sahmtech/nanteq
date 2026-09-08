@@ -51,8 +51,14 @@ return [
     'subscribed_successfully' => 'تم الاشتراك بنجاح',
     'uncompleted_profile_message' => 'الرجاء إكمال البيانات الشخصية أولاً',
     'already_subscribed' => 'لديك بالفعل اشتراك ساري المفعول',
+    'plan_not_available' => 'هذه الباقة غير متاحة لحسابك',
     'no_subscription' => 'لا يوجد اشتراك',
     'completed' => 'مكتمل',
     'not_completed' => 'غير مكتمل',
-    'unauthenticated' => 'عذراً، يجب تسجيل الدخول أولاً'
+    'unauthenticated' => 'عذراً، يجب تسجيل الدخول أولاً',
+    'follow_with_specialist' => 'المتابعة مع أخصائي',
+    'specialist_pin' => 'رمز المعالج (PIN)',
+    'specialist_pin_required' => 'عند اختيار المتابعة مع أخصائي يجب إدخال رمز المعالج (PIN)',
+    'specialist_pin_invalid' => 'رمز المعالج غير صحيح أو لا يخص أخصائياً فعّالاً',
+    'specialist_pin_full' => 'هذا الأخصائي وصل إلى الحد الأقصى لعدد المرضى في باقته',
 ];
