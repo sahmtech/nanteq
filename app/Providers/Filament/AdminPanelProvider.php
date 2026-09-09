@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Pages\Dashboard;
+use App\Support\Brand;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -11,6 +12,7 @@ use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\View\PanelsRenderHook;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -30,6 +32,9 @@ class AdminPanelProvider extends PanelProvider
             ->login(\App\Filament\Auth\Login::class)
             ->profile()
             ->brandName('Nanteq')
+            ->brandLogo(fn () => view('filament.brand-logo'))
+            ->brandLogoHeight('2.85rem')
+            ->favicon(Brand::favicon())
             ->colors([
                 'primary' => Color::hex('#0083a0'),
             ])
@@ -95,6 +100,14 @@ class AdminPanelProvider extends PanelProvider
                 \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make()
             ])
             ->sidebarFullyCollapsibleOnDesktop()
+            ->renderHook(
+                PanelsRenderHook::HEAD_END,
+                fn (): string => view('filament.hooks.brand-head')->render(),
+            )
+            ->renderHook(
+                PanelsRenderHook::STYLES_AFTER,
+                fn (): string => '<link rel="stylesheet" href="'.e(asset('css/brand.css')).'?v=3">',
+            )
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->databaseNotifications();
     }

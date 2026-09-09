@@ -3,11 +3,9 @@
     <span class="aw-orb aw-orb-2"></span>
     <span class="aw-orb aw-orb-3"></span>
 
+    @include('filament.pages.auth.partials.auth-corner-logo')
+
     <div class="aw-stack">
-        <div class="aw-logo">
-            <span class="aw-logo-badge">N</span>
-            <p class="aw-logo-text">Nanteq</p>
-        </div>
 
         <section class="aw-float w-full max-w-xl md:max-w-2xl bg-white rounded-3xl shadow-2xl p-8 md:p-10 my-auto z-10 border border-white/20">
             <h1 class="aw-title">{{ __('dashboard.login_heading') }}</h1>

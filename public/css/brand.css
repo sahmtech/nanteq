@@ -1,0 +1,63 @@
+.nq-brand-logo {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+.nq-brand-logo--sidebar {
+    height: 2.85rem;
+    border-radius: 0.7rem;
+}
+
+.fi-sidebar:not(.fi-sidebar-open) .nq-brand-logo--sidebar {
+    height: 2.15rem;
+    border-radius: 0.55rem;
+}
+
+.fi-sidebar-header {
+    padding-top: 0.85rem;
+    padding-bottom: 0.35rem;
+}
+
+.fi-logo,
+.fi-sidebar-header .fi-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nq-brand-logo--auth {
+    width: 2.55rem;
+    height: auto;
+    display: block;
+    background: transparent;
+    box-shadow: none;
+    border-radius: 0;
+}
+
+.aw-logo {
+    position: absolute;
+    top: 1.1rem;
+    inset-inline-start: 1.1rem;
+    z-index: 20;
+    line-height: 0;
+}
+
+.aw-logo-plate {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.38rem;
+    border-radius: 0.9rem;
+    background: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    box-shadow:
+        0 10px 28px rgba(8, 28, 48, 0.28),
+        0 0 0 1px rgba(0, 131, 160, 0.08);
+}
+
+.aw-logo-badge,
+.aw-logo-text {
+    display: none;
+}

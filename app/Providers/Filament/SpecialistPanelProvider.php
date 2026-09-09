@@ -4,6 +4,7 @@ namespace App\Providers\Filament;
 
 use App\Filament\Auth\Login;
 use App\Filament\Auth\RegisterSpecialist;
+use App\Support\Brand;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -29,6 +30,9 @@ class SpecialistPanelProvider extends PanelProvider
             ->login(Login::class)
             ->registration(RegisterSpecialist::class)
             ->brandName('Nanteq')
+            ->brandLogo(fn () => view('filament.brand-logo'))
+            ->brandLogoHeight('2.85rem')
+            ->favicon(Brand::favicon())
             ->colors([
                 'primary' => Color::hex('#0083a0'),
             ])
@@ -37,8 +41,13 @@ class SpecialistPanelProvider extends PanelProvider
             ->widgets([])
             ->homeUrl(fn (): string => url('/specialist/sounds-progress'))
             ->renderHook(
+                PanelsRenderHook::HEAD_END,
+                fn (): string => view('filament.hooks.brand-head')->render(),
+            )
+            ->renderHook(
                 PanelsRenderHook::STYLES_AFTER,
-                fn (): string => '<link rel="stylesheet" href="'.e(asset('css/specialist-pin.css')).'?v=3">',
+                fn (): string => '<link rel="stylesheet" href="'.e(asset('css/brand.css')).'?v=3">'.
+                    '<link rel="stylesheet" href="'.e(asset('css/specialist-pin.css')).'?v=3">',
             )
             ->renderHook(
                 PanelsRenderHook::SIDEBAR_NAV_END,
