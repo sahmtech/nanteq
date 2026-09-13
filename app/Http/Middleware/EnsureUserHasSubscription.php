@@ -16,6 +16,10 @@ class EnsureUserHasSubscription
      */
     public function handle(Request $request, Closure $next): Response
     {
+        if ($request->user()?->hasUnrestrictedAccess()) {
+            return $next($request);
+        }
+
         if (! $request->user()?->subscription?->status == 'active') {
             return response()->json(['status' => false, 'message' => __('api.unsubscribed_message')], 402);
         }

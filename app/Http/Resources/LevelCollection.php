@@ -27,6 +27,10 @@ class LevelCollection extends ResourceCollection
     {
 
 
+        if (auth()->user()?->hasUnrestrictedAccess()) {
+            return false;
+        }
+
        if (optional($currentLevel->letter)->is_demo == 1) {
         return false;
     }

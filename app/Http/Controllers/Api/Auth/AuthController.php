@@ -23,9 +23,17 @@ class AuthController extends BaseController
 
         $token = $user->createToken($user->phone_number)->plainTextToken;
 
+        $subscription = $user->subscription;
+        if ($user->hasUnrestrictedAccess() && (! $subscription || $subscription->status !== 'active')) {
+            $subscription = [
+                'status' => 'active',
+            ];
+        }
+
         return $this->withSuccess([
-            'profile_completion_status' => $user->profile_completion_status,
-            'user_subscription' => $user->subscription,
+            'profile_completion_status' => $user->hasUnrestrictedAccess() ? 'completed' : $user->profile_completion_status,
+            'user_subscription' => $subscription,
+            'has_subscription' => $user->hasUnrestrictedAccess() || ($user->subscription && $user->subscription->status === 'active'),
             'token' => $token
         ]);
     }

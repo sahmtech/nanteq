@@ -64,6 +64,11 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasRole('specialist');
     }
 
+    public function hasUnrestrictedAccess(): bool
+    {
+        return \App\Support\UnrestrictedAccess::allows($this);
+    }
+
     public function plan()
     {
         return $this->hasOneThrough(Plan::class, Subscription::class);

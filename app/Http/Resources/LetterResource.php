@@ -18,7 +18,7 @@ class LetterResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'letter' => $this->letter,
-            'is_demo' => $this->is_demo,
+            'is_demo' => $this->is_demo || auth()->user()?->hasUnrestrictedAccess(),
             'image' => $this->image ? get_media_url($this->image) : null,
             'total_levels_count' => $this->levels()->count(),
             'completed_levels_count' => $this->LevelsProgresses()->where('trainee_id', auth()->user()->id)->where('status', 'completed')->count() ?? 0,
