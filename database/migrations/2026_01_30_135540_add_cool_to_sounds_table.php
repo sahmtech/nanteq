@@ -11,10 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('sounds', function (Blueprint $table) {
-            
-            $table->integer('is_letter')->default(0)->after('type');
+        if (Schema::hasColumn('sounds', 'is_letter')) {
+            return;
+        }
 
+        Schema::table('sounds', function (Blueprint $table) {
+            $table->integer('is_letter')->default(0)->after('type');
         });
     }
 
@@ -23,6 +25,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        if (! Schema::hasColumn('sounds', 'is_letter')) {
+            return;
+        }
+
         Schema::table('sounds', function (Blueprint $table) {
             $table->dropColumn('is_letter');
         });

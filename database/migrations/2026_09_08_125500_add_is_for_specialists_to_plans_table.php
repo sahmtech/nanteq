@@ -11,6 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (Schema::hasColumn('plans', 'is_for_specialists')) {
+            return;
+        }
+
         Schema::table('plans', function (Blueprint $table) {
             $table->boolean('is_for_specialists')->default(false)->after('price');
         });
@@ -21,6 +25,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        if (! Schema::hasColumn('plans', 'is_for_specialists')) {
+            return;
+        }
+
         Schema::table('plans', function (Blueprint $table) {
             $table->dropColumn('is_for_specialists');
         });
