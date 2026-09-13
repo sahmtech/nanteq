@@ -36,13 +36,15 @@ class LevelCollection extends ResourceCollection
     }
         $traineeId = auth()->id();
 
-         $previousLevels = \App\Models\Level::where('letter_id', $currentLevel->letter_id)
+        $previousLevels = \App\Models\Level::query()
+            ->with('sounds:id,level_id')
+            ->where('letter_id', $currentLevel->letter_id)
             ->where('sort_order', '<', $currentLevel->sort_order)
             ->get();
 
         foreach ($previousLevels as $prevLevel) {
             $completedSoundsCount = SoundProgress::where('trainee_id', $traineeId)
-                ->whereIn('sound_id', $prevLevel->sounds()->pluck('id'))
+                ->whereIn('sound_id', $prevLevel->sounds->pluck('id'))
                 ->where('status', 'completed')
                 ->count();
 
@@ -57,7 +59,9 @@ class LevelCollection extends ResourceCollection
     private function buildLevelProgress($level)
     {
         $traineeId = auth()->id();
-        $sounds = $level->sounds()->pluck('id');
+        $sounds = $level->relationLoaded('sounds')
+            ? $level->sounds->pluck('id')
+            : $level->sounds()->pluck('id');
         $soundsCount = $sounds->count();
 
         if ($soundsCount === 0) {

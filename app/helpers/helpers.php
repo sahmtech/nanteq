@@ -19,7 +19,19 @@ if (! function_exists('highlight_file')) {
 if (!function_exists('get_media_url')) {
     function get_media_url($media)
     {
-        return env('APP_URL') . '/storage/' . $media;
+        if (blank($media)) {
+            return null;
+        }
+
+        $path = (string) $media;
+
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            return $path;
+        }
+
+        $base = rtrim((string) (config('app.url') ?: env('APP_URL')), '/');
+
+        return $base.'/storage/'.ltrim($path, '/');
     }
 }
 

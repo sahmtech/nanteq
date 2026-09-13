@@ -21,9 +21,17 @@ class LevelController extends BaseController
     {
         try{
             $letter = Letter::find($letter_id);
+
+            if (! $letter) {
+                return $this->withError(__('api.not found'), 404);
+            }
+
             $this->checkSubscription($letter);
-            
-            $levels = Level::with('letterProgress')->where('letter_id', $letter_id)->get();
+
+            $levels = Level::with(['letter', 'letterProgress', 'sounds:id,level_id'])
+                ->where('letter_id', $letter_id)
+                ->orderBy('sort_order')
+                ->get();
             return $this->withSuccess(new LevelCollection($levels));
         } catch (\Throwable $e) {
             return $this->withError($e->getMessage(), 500);

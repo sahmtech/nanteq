@@ -16,6 +16,12 @@ class LetterController extends BaseController
             $user_age_group = auth()->user()->ageGroup?->id;
 
             $letters = Letter::active()
+                ->withCount([
+                    'levels',
+                    'LevelsProgresses as completed_levels_count' => function ($query) {
+                        $query->where('trainee_id', auth()->id())->where('status', 'completed');
+                    },
+                ])
                 ->orderByRaw("age_group_id = ? DESC, id ASC", [$user_age_group])
                 ->orderBy('id')
                 ->get();
