@@ -26,7 +26,7 @@ class AudioService
     public function aiModel($audio, $modelType)
     {
         $config = config('services.ai_model');
-        $model = $config['models'][(int) $modelType] ?? $config['models'][0];
+        $model = $this->aiModelConfig((int) $modelType);
         $url = rtrim((string) $config['base_url'], '/') . $model['path'];
         $path = method_exists($audio, 'getRealPath') ? $audio->getRealPath() : (string) $audio;
         $filename = method_exists($audio, 'getClientOriginalName')
@@ -40,7 +40,90 @@ class AudioService
                 'verify' => $this->aiModelSslVerify(),
             ])
             ->attach('file', file_get_contents($path), $filename)
-            ->post($url, $model['form']);
+            ->post($url, $this->aiModelForm($model));
+    }
+
+    protected function aiModelConfig(int $modelType): array
+    {
+        $models = config('services.ai_model.models');
+
+        return $models[$modelType] ?? $models[2];
+    }
+
+    protected function aiModelForm(array $model): array
+    {
+        if (($model['driver'] ?? 'stt') !== 'pronunciation') {
+            return [];
+        }
+
+        return [
+            'target' => $this->pronunciationTarget(),
+            'stage' => (string) $model['stage'],
+            'model' => config('services.ai_model.pronunciation_model'),
+        ];
+    }
+
+    protected function pronunciationTarget(): string
+    {
+        return trim((string) ($this->sound->spelled_word ?: $this->sound->written_word));
+    }
+
+    protected function isPronunciationModel(int $modelType): bool
+    {
+        return ($this->aiModelConfig($modelType)['driver'] ?? 'stt') === 'pronunciation';
+    }
+
+    protected function resultFromTranscription(Response $response): array
+    {
+        $transcribedText = trim((string) $response->json('text', ''));
+
+        $this->splitFilterText($transcribedText);
+
+        $this->spelledRequiredWord = $this->sound->spelled_word ?? $this->sound->written_word;
+
+        return $this->compareWords();
+    }
+
+    protected function resultFromPronunciation(Response $response): array
+    {
+        $status = (string) $response->json('status', '');
+        $target = $this->pronunciationTarget();
+
+        if (in_array($status, ['unclear', 'low_quality'], true)) {
+            Log::info('AI pronunciation needs retry', [
+                'status' => $status,
+                'sound_id' => $this->sound->id,
+            ]);
+        }
+
+        if ($status === 'correct') {
+            return [
+                'mistakes' => [],
+                'correct_words' => [
+                    [
+                        'word' => $target,
+                        'index' => 0,
+                    ],
+                ],
+                'total_accuracy' => 100,
+            ];
+        }
+
+        return [
+            'mistakes' => [
+                [
+                    'expected' => $target,
+                    'given' => '',
+                    'letters' => [
+                        'incorrect_letters' => [],
+                        'correct_letters' => [],
+                        'word_accuracy' => 0,
+                    ],
+                ],
+            ],
+            'correct_words' => [],
+            'total_accuracy' => 0,
+        ];
     }
 
     protected function aiModelSslVerify(): bool|string
@@ -78,16 +161,11 @@ class AudioService
         }
 
         return \DB::transaction(function () use ($data, $response) {
-            $transcribedText = trim((string) $response->json('text', ''));
-
             $this->sound = Sound::find($data['sound_id']);
-           
-            
-            $this->splitFilterText($transcribedText);
 
-            $this->spelledRequiredWord = $this->sound->spelled_word ?? $this->sound->written_word;
-
-            $result = $this->compareWords();
+            $result = $this->isPronunciationModel((int) $this->sound->model_type)
+                ? $this->resultFromPronunciation($response)
+                : $this->resultFromTranscription($response);
 
             $success_rate = $this->sound->success_rate ?? 100;
             $attempts_to_success = $this->sound->attempts_to_success ?? 1;

@@ -93,29 +93,31 @@ public static function getPermissionPrefixes(): array
 
                         // ---------- model_type ----------
                         Forms\Components\Select::make('model_type')
-                            ->label('Model Type')
+                            ->label('Stage')
                             ->options([
-                                'model1' => 'Model 1',
-                                'model2' => 'Model 2',
+                                'stage1' => 'Stage 1',
+                                'stage2' => 'Stage 2',
+                                'stage3' => 'Stage 3',
                             ])
                             ->required()
                             ->native(false)
-
-                            // عند التعديل
                             ->afterStateHydrated(function ($component, $state) {
-                                if ($state === 0) {
-                                    $component->state('model1');
-                                } elseif ($state === 1) {
-                                    $component->state('model2');
+                                if (in_array($state, ['stage1', 'stage2', 'stage3'], true)) {
+                                    return;
                                 }
-                            })
 
-                            // عند الحفظ
-                            ->dehydrateStateUsing(function ($state) {
-                                return $state === 'model2' ? 1 : 0;
+                                $component->state(match ((int) $state) {
+                                    1 => 'stage2',
+                                    2 => 'stage3',
+                                    default => 'stage1',
+                                });
                             })
-
-                            ->default('model1'),
+                            ->dehydrateStateUsing(fn ($state) => match ($state) {
+                                'stage2' => 1,
+                                'stage3' => 2,
+                                default => 0,
+                            })
+                            ->default('stage1'),
                         // ---------- END model_type ----------
 
                           Forms\Components\Toggle::make('is_letter')

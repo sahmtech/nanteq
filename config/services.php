@@ -41,16 +41,21 @@ return [
         'ca' => env('AI_MODEL_CA'),
         'verify' => filter_var(env('AI_MODEL_VERIFY', false), FILTER_VALIDATE_BOOLEAN),
         'timeout' => (int) env('AI_MODEL_TIMEOUT', 90),
+        'pronunciation_model' => env('AI_MODEL_PRONUNCIATION', 'ar-pronunciation'),
         'models' => [
             0 => [
-                'path' => '/v1/stt',
-                'form' => [],
+                'driver' => 'pronunciation',
+                'path' => '/v1/pronunciation',
+                'stage' => 1,
             ],
             1 => [
-                'path' => '/v1/transcribe',
-                'form' => [
-                    'model' => env('AI_MODEL_CTC', 'ar-ctc'),
-                ],
+                'driver' => 'pronunciation',
+                'path' => '/v1/pronunciation',
+                'stage' => 2,
+            ],
+            2 => [
+                'driver' => 'stt',
+                'path' => '/v1/stt',
             ],
         ],
     ],

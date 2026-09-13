@@ -19,7 +19,7 @@ class AudioController extends BaseController
     {
         try {
             $validated = $request->validate([
-                'audio' => ['required', 'file', 'mimes:mp4,mp3,wav,aac'],
+                'audio' => ['required', 'file', 'mimes:mp4,mp3,wav,aac,m4a'],
                 'sound_id' => ['required', 'integer', 'exists:sounds,id'],
             ]);
 
