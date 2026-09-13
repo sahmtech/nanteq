@@ -66,7 +66,68 @@ class User extends Authenticatable implements FilamentUser
 
     public function hasUnrestrictedAccess(): bool
     {
-        return \App\Support\UnrestrictedAccess::allows($this);
+        try {
+            $allowed = config('access.unrestricted_phones');
+
+            if (! is_array($allowed) || $allowed === []) {
+                $allowed = [
+                    '+966555999971',
+                    '+966555321104',
+                ];
+            }
+
+            $allowed = array_values(array_filter(array_map(
+                fn ($phone) => $this->normalizeUnrestrictedPhone((string) $phone),
+                $allowed
+            )));
+
+            foreach ($this->unrestrictedPhoneCandidates() as $number) {
+                if (in_array($number, $allowed, true)) {
+                    return true;
+                }
+            }
+        } catch (\Throwable) {
+            return false;
+        }
+
+        return false;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    protected function unrestrictedPhoneCandidates(): array
+    {
+        $code = preg_replace('/\D+/', '', (string) $this->phone_code) ?? '';
+        $number = preg_replace('/\D+/', '', (string) $this->phone_number) ?? '';
+
+        return array_values(array_unique(array_filter([
+            $this->normalizeUnrestrictedPhone($code.$number),
+            $this->normalizeUnrestrictedPhone($number),
+        ])));
+    }
+
+    protected function normalizeUnrestrictedPhone(string $phone): string
+    {
+        $digits = preg_replace('/\D+/', '', $phone) ?? '';
+
+        if ($digits === '') {
+            return '';
+        }
+
+        if (str_starts_with($digits, '00')) {
+            $digits = substr($digits, 2);
+        }
+
+        if (str_starts_with($digits, '0')) {
+            $digits = substr($digits, 1);
+        }
+
+        if (! str_starts_with($digits, '966')) {
+            $digits = '966'.$digits;
+        }
+
+        return $digits;
     }
 
     public function plan()
