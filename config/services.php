@@ -42,6 +42,7 @@ return [
         'verify' => filter_var(env('AI_MODEL_VERIFY', false), FILTER_VALIDATE_BOOLEAN),
         'timeout' => (int) env('AI_MODEL_TIMEOUT', 90),
         'pronunciation_model' => env('AI_MODEL_PRONUNCIATION', 'ar-pronunciation'),
+        'store_uploads' => filter_var(env('AI_MODEL_STORE_UPLOADS', false), FILTER_VALIDATE_BOOLEAN),
         'models' => [
             0 => [
                 'driver' => 'pronunciation',

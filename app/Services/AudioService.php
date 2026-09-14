@@ -9,6 +9,7 @@ use App\Models\SoundProgress;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class AudioService
@@ -27,20 +28,146 @@ class AudioService
     {
         $config = config('services.ai_model');
         $model = $this->aiModelConfig((int) $modelType);
-        $url = rtrim((string) $config['base_url'], '/') . $model['path'];
+        $url = rtrim((string) $config['base_url'], '/').$model['path'];
+        $form = $this->aiModelForm($model);
+        $file = $this->aiModelFileMeta($audio);
+        $stored = $this->maybeStoreAiUpload($file);
+        $started = hrtime(true);
+
+        $this->aiLog('info', 'AI request started', [
+            'phase' => 'request',
+            'url' => $url,
+            'method' => 'POST',
+            'content_type' => 'multipart/form-data',
+            'driver' => $model['driver'] ?? 'stt',
+            'model_type' => (int) $modelType,
+            'pronunciation_model' => $form['model'] ?? null,
+            'form' => $form,
+            'file' => collect($file)->except('path')->all(),
+            'stored_upload' => $stored,
+            'timeout_seconds' => $config['timeout'],
+            'auth' => $this->aiMaskedToken($config['token'] ?? null),
+            'sound_id' => $this->sound?->id,
+            'user_id' => auth()->id(),
+        ]);
+
+        try {
+            $response = Http::withToken($config['token'])
+                ->timeout($config['timeout'])
+                ->connectTimeout(15)
+                ->withOptions([
+                    'verify' => $this->aiModelSslVerify(),
+                ])
+                ->attach('file', file_get_contents($file['path']), $file['filename'])
+                ->post($url, $form);
+
+            $this->aiLog($response->successful() ? 'info' : 'warning', 'AI request finished', [
+                'phase' => 'response',
+                'url' => $url,
+                'driver' => $model['driver'] ?? 'stt',
+                'model_type' => (int) $modelType,
+                'http_status' => $response->status(),
+                'duration_ms' => $this->aiElapsedMs($started),
+                'response_json' => $response->json(),
+                'response_body' => Str::limit((string) $response->body(), 4000),
+                'sound_id' => $this->sound?->id,
+                'user_id' => auth()->id(),
+            ]);
+
+            return $response;
+        } catch (\Throwable $e) {
+            $this->aiLog('error', 'AI request exception', [
+                'phase' => 'exception',
+                'url' => $url,
+                'driver' => $model['driver'] ?? 'stt',
+                'model_type' => (int) $modelType,
+                'duration_ms' => $this->aiElapsedMs($started),
+                'exception' => $e::class,
+                'message' => $e->getMessage(),
+                'sound_id' => $this->sound?->id,
+                'user_id' => auth()->id(),
+            ]);
+
+            throw $e;
+        }
+    }
+
+    protected function aiModelFileMeta($audio): array
+    {
         $path = method_exists($audio, 'getRealPath') ? $audio->getRealPath() : (string) $audio;
         $filename = method_exists($audio, 'getClientOriginalName')
             ? $audio->getClientOriginalName()
-            : basename($path);
+            : basename((string) $path);
+        $extension = method_exists($audio, 'getClientOriginalExtension')
+            ? $audio->getClientOriginalExtension()
+            : pathinfo((string) $filename, PATHINFO_EXTENSION);
+        $clientMime = method_exists($audio, 'getClientMimeType') ? $audio->getClientMimeType() : null;
+        $size = method_exists($audio, 'getSize') ? $audio->getSize() : (is_file($path) ? filesize($path) : null);
+        $detectedMime = (is_string($path) && is_file($path)) ? (mime_content_type($path) ?: null) : null;
 
-        return Http::withToken($config['token'])
-            ->timeout($config['timeout'])
-            ->connectTimeout(15)
-            ->withOptions([
-                'verify' => $this->aiModelSslVerify(),
-            ])
-            ->attach('file', file_get_contents($path), $filename)
-            ->post($url, $this->aiModelForm($model));
+        return [
+            'field' => 'file',
+            'filename' => $filename,
+            'extension' => $extension,
+            'client_mime' => $clientMime,
+            'detected_mime' => $detectedMime,
+            'size_bytes' => $size,
+            'path_exists' => is_string($path) && is_file($path),
+            'path' => $path,
+        ];
+    }
+
+    protected function maybeStoreAiUpload(array $file): ?array
+    {
+        if (! config('services.ai_model.store_uploads')) {
+            return null;
+        }
+
+        if (! ($file['path_exists'] ?? false) || blank($file['path'] ?? null)) {
+            return ['error' => 'source_file_missing'];
+        }
+
+        $extension = $file['extension'] ?: 'bin';
+        $path = sprintf(
+            'ai-debug/%s/%s_%s_%s.%s',
+            now()->format('Y-m-d'),
+            auth()->id() ?: 'guest',
+            $this->sound?->id ?: 'sound',
+            Str::uuid(),
+            $extension
+        );
+
+        Storage::disk('public')->put($path, file_get_contents($file['path']));
+
+        return [
+            'disk' => 'public',
+            'path' => $path,
+            'url' => get_media_url($path),
+        ];
+    }
+
+    protected function aiMaskedToken(?string $token): string
+    {
+        if (blank($token)) {
+            return 'missing';
+        }
+
+        $token = (string) $token;
+
+        return strlen($token) <= 8
+            ? 'set'
+            : substr($token, 0, 4).'…'.substr($token, -4);
+    }
+
+    protected function aiElapsedMs(int $started): float
+    {
+        return round((hrtime(true) - $started) / 1e6, 1);
+    }
+
+    protected function aiLog(string $level, string $message, array $context): void
+    {
+        Log::channel('ai')->{$level}($message, $context);
+        Log::{$level}($message, $context);
     }
 
     protected function aiModelConfig(int $modelType): array
@@ -90,9 +217,10 @@ class AudioService
         $target = $this->pronunciationTarget();
 
         if (in_array($status, ['unclear', 'low_quality'], true)) {
-            Log::info('AI pronunciation needs retry', [
+            $this->aiLog('info', 'AI pronunciation needs retry', [
                 'status' => $status,
                 'sound_id' => $this->sound->id,
+                'target' => $target,
             ]);
         }
 
@@ -139,9 +267,10 @@ class AudioService
 
     protected function logAiModelFailure(Response $response): void
     {
-        Log::warning('AI model request failed', [
-            'status' => $response->status(),
-            'body' => $response->body(),
+        $this->aiLog('warning', 'AI model request failed', [
+            'http_status' => $response->status(),
+            'body' => Str::limit((string) $response->body(), 4000),
+            'sound_id' => $this->sound?->id,
         ]);
     }
 
