@@ -255,5 +255,17 @@ return [
     'specialist_feature_tracking' => 'تتبع نتائج المرضى بدقة',
     'specialist_feature_reports' => 'تقارير خطط العلاج',
     'specialist_feature_plans' => 'إدارة الباقات والاشتراكات',
+    'reports_management' => 'التقارير',
+    'pronunciation_reviews' => 'تقييم النطق',
+    'pronunciation_review' => 'مراجعة نطق',
+    'pronunciation_score' => 'Score',
+    'pronunciation_overall_score' => 'Overall score',
+    'pronunciation_technical_log' => 'Technical log',
+    'pronunciation_status' => 'حالة الموديل',
+    'pronunciation_ai_score' => 'درجة الموديل',
+    'pronunciation_target' => 'المطلوب',
+    'pronunciation_heard' => 'المسموع',
+    'pronunciation_audio' => 'التسجيل',
+    'pronunciation_export' => 'تصدير CSV',
 
 ];

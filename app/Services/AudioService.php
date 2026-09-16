@@ -24,6 +24,12 @@ class AudioService
 
     protected $records = [];
 
+    protected ?array $lastStoredUpload = null;
+
+    protected ?array $lastAiFileMeta = null;
+
+    protected ?int $lastAiDurationMs = null;
+
     public function aiModel($audio, $modelType)
     {
         $config = config('services.ai_model');
@@ -31,7 +37,9 @@ class AudioService
         $url = rtrim((string) $config['base_url'], '/').$model['path'];
         $form = $this->aiModelForm($model);
         $file = $this->aiModelFileMeta($audio);
+        $this->lastAiFileMeta = $file;
         $stored = $this->maybeStoreAiUpload($file);
+        $this->lastStoredUpload = $stored;
         $started = hrtime(true);
 
         $this->aiLog('info', 'AI request started', [
@@ -61,13 +69,15 @@ class AudioService
                 ->attach('file', file_get_contents($file['path']), $file['filename'])
                 ->post($url, $form);
 
+            $this->lastAiDurationMs = (int) round($this->aiElapsedMs($started));
+
             $this->aiLog($response->successful() ? 'info' : 'warning', 'AI request finished', [
                 'phase' => 'response',
                 'url' => $url,
                 'driver' => $model['driver'] ?? 'stt',
                 'model_type' => (int) $modelType,
                 'http_status' => $response->status(),
-                'duration_ms' => $this->aiElapsedMs($started),
+                'duration_ms' => $this->lastAiDurationMs,
                 'response_json' => $response->json(),
                 'response_body' => Str::limit((string) $response->body(), 4000),
                 'sound_id' => $this->sound?->id,
@@ -289,7 +299,7 @@ class AudioService
             throw new GeneralException(__('api.Something_went_wrong'));
         }
 
-        return \DB::transaction(function () use ($data, $response) {
+        $payload = \DB::transaction(function () use ($data, $response) {
             $this->sound = Sound::find($data['sound_id']);
 
             $result = $this->isPronunciationModel((int) $this->sound->model_type)
@@ -303,13 +313,36 @@ class AudioService
             $this->storeRecord($data['audio'], $success);
             $sound_progress = $this->StoreSoundProgress($success, $attempts_to_success, $result);
 
-
             return [
                 'result' => $result,
                 'sound_progress' => new SoundProgressResource($sound_progress)
             ];
         });
 
+        if ($this->isPronunciationModel((int) $this->sound->model_type)) {
+            $this->storePronunciationReview($response);
+        }
+
+        return $payload;
+
+    }
+
+    protected function storePronunciationReview(Response $response): void
+    {
+        try {
+            app(PronunciationReviewService::class)->record(
+                $this->sound,
+                $response,
+                $this->lastAiFileMeta ?? [],
+                $this->lastStoredUpload,
+                $this->lastAiDurationMs,
+            );
+        } catch (\Throwable $e) {
+            $this->aiLog('warning', 'Failed to store pronunciation review', [
+                'sound_id' => $this->sound?->id,
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
 
     protected function storeRecord($audio, $success)

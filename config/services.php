@@ -43,6 +43,7 @@ return [
         'timeout' => (int) env('AI_MODEL_TIMEOUT', 90),
         'pronunciation_model' => env('AI_MODEL_PRONUNCIATION', 'ar-pronunciation'),
         'store_uploads' => filter_var(env('AI_MODEL_STORE_UPLOADS', false), FILTER_VALIDATE_BOOLEAN),
+        'review_webhook' => env('PRONUNCIATION_REVIEW_WEBHOOK'),
         'models' => [
             0 => [
                 'driver' => 'pronunciation',
