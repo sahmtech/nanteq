@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\AiPronunciationAttemptResource\Pages;
 
 use App\Filament\Resources\AiPronunciationAttemptResource;
+use App\Filament\Resources\AiPronunciationAttemptResource\Widgets\PronunciationReviewStats;
 use App\Models\AiPronunciationAttempt;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
@@ -11,6 +12,13 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 class ListAiPronunciationAttempts extends ListRecords
 {
     protected static string $resource = AiPronunciationAttemptResource::class;
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            PronunciationReviewStats::class,
+        ];
+    }
 
     protected function getHeaderActions(): array
     {

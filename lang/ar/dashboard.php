@@ -267,5 +267,9 @@ return [
     'pronunciation_heard' => 'المسموع',
     'pronunciation_audio' => 'التسجيل',
     'pronunciation_export' => 'تصدير CSV',
+    'pronunciation_app_overall' => 'Overall Score',
+    'pronunciation_app_overall_hint' => 'متوسط Overall Score لكل حرف تم اختباره',
+    'pronunciation_coverage' => 'Test Coverage',
+    'pronunciation_coverage_hint' => 'عدد الحروف المختبرة من أصل الحروف في النظام',
 
 ];

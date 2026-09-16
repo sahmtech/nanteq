@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\AiPronunciationAttempt;
+use App\Models\Letter;
 use App\Models\Sound;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
@@ -47,6 +48,44 @@ class PronunciationReviewService
         $this->notifyReviewWebhook($attempt);
 
         return $attempt;
+    }
+
+    /**
+     * @return array{app_overall: float|null, tested_letters: int, total_letters: int, coverage_label: string}
+     */
+    public function appReviewStats(): array
+    {
+        $letterOveralls = AiPronunciationAttempt::query()
+            ->join('letters', 'letters.id', '=', 'ai_pronunciation_attempts.letter_id')
+            ->whereNotNull('ai_pronunciation_attempts.score')
+            ->whereNotNull('ai_pronunciation_attempts.letter_id')
+            ->groupBy('letters.letter')
+            ->selectRaw('letters.letter as letter_key, avg(ai_pronunciation_attempts.score) as letter_overall')
+            ->pluck('letter_overall');
+
+        $tested = $letterOveralls->count();
+        $total = (int) Letter::query()
+            ->whereNotNull('letter')
+            ->where('letter', '!=', '')
+            ->distinct()
+            ->count('letter');
+
+        if ($total === 0) {
+            $total = (int) Letter::query()->count();
+        }
+
+        $total = max($tested, $total > 0 ? $total : 28);
+
+        $appOverall = $tested === 0
+            ? null
+            : round((float) $letterOveralls->avg(), 1);
+
+        return [
+            'app_overall' => $appOverall,
+            'tested_letters' => $tested,
+            'total_letters' => $total,
+            'coverage_label' => $tested.' / '.$total,
+        ];
     }
 
     public function letterOverallScore(int $letterId): int

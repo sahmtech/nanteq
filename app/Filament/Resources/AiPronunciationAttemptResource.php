@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\AiPronunciationAttemptResource\Pages;
+use App\Filament\Resources\AiPronunciationAttemptResource\Widgets;
 use App\Models\AiPronunciationAttempt;
 use Filament\Infolists;
 use Filament\Infolists\Infolist;
@@ -150,6 +151,13 @@ class AiPronunciationAttemptResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->with(['letter', 'sound', 'user']);
+    }
+
+    public static function getWidgets(): array
+    {
+        return [
+            Widgets\PronunciationReviewStats::class,
+        ];
     }
 
     public static function getPages(): array

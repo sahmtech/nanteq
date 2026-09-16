@@ -263,4 +263,8 @@ return [
     'pronunciation_heard' => 'Heard',
     'pronunciation_audio' => 'Recording',
     'pronunciation_export' => 'Export CSV',
+    'pronunciation_app_overall' => 'Overall Score',
+    'pronunciation_app_overall_hint' => 'Average Overall Score of every tested letter',
+    'pronunciation_coverage' => 'Test Coverage',
+    'pronunciation_coverage_hint' => 'Tested letters out of all letters in the system',
 ];
