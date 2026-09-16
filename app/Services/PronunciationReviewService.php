@@ -65,6 +65,18 @@ class PronunciationReviewService
 
     public function scoreOutOfFive(string $status, ?float $raw): int
     {
+        if ($status === 'correct') {
+            return 5;
+        }
+
+        if (in_array($status, ['unclear', 'low_quality'], true)) {
+            return 2;
+        }
+
+        if ($status === 'incorrect') {
+            return 2;
+        }
+
         if ($raw !== null && $raw > 0) {
             if ($raw <= 5) {
                 return max(1, min(5, (int) round($raw)));
@@ -73,12 +85,7 @@ class PronunciationReviewService
             return max(1, min(5, (int) round($raw / 20)));
         }
 
-        return match ($status) {
-            'correct' => 5,
-            'incorrect' => 2,
-            'unclear', 'low_quality' => 2,
-            default => 1,
-        };
+        return 1;
     }
 
     protected function technicalLog(array $json, array $fileMeta, Response $response, ?int $durationMs): string
